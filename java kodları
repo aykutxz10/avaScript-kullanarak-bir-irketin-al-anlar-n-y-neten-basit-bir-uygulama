@@ -1,0 +1,133 @@
+let calisanlar = [];
+
+function calisanEkle(isim, yas, departman, maas) {
+    if (!isim || yas < 18 || yas < 0 || maas < 0) {
+        console.log("Hatalı giriş: İsim boş, yaş 18'den küçük veya negatif, maaş negatif olamaz.");
+        return;
+    }
+    
+    for (let calisan of calisanlar) {
+        if (calisan.isim === isim) {
+            console.log("Bu isimde bir çalışan zaten mevcut.");
+            return;
+        }
+    }
+
+    const yeniCalisan = { isim, yas, departman, maas };
+    calisanlar.push(yeniCalisan);
+    console.log(`${isim} adlı çalışan başarıyla eklendi.`);
+}
+
+function calisanGuncelle(eskiIsim, yeniIsim, yeniYas, yeniDepartman, yeniMaas) {
+    let calisanBulundu = false;
+
+    for (let i = 0; i < calisanlar.length; i++) {
+        if (calisanlar[i].isim === eskiIsim) {
+            calisanBulundu = true;
+
+            if (!yeniIsim || yeniYas < 18 || yeniYas < 0 || yeniMaas < 0) {
+                console.log("Hatalı giriş: İsim boş, yaş 18'den küçük veya negatif, maaş negatif olamaz.");
+                return;
+            }
+
+            calisanlar[i].isim = yeniIsim;
+            calisanlar[i].yas = yeniYas;
+            calisanlar[i].departman = yeniDepartman;
+            calisanlar[i].maas = yeniMaas;
+
+            console.log(`${eskiIsim} adlı çalışan güncellendi.`);
+            return;
+        }
+    }
+
+    if (!calisanBulundu) {
+        console.log("Güncellenecek çalışan bulunamadı.");
+    }
+}
+
+function calisanSil(isim) {
+    for (let i = 0; i < calisanlar.length; i++) {
+        if (calisanlar[i].isim === isim) {
+            calisanlar.splice(i, 1);
+            console.log(`${isim} adlı çalışan başarıyla silindi.`);
+            return;
+        }
+    }
+    console.log("Silinecek çalışan bulunamadı.");
+}
+
+function calisanListele(departman = null, maasSirasi = null) {
+    let liste = calisanlar;
+
+    if (departman) {
+        liste = liste.filter(calisan => calisan.departman === departman);
+        if (liste.length === 0) {
+            console.log("Bu departmanda çalışan bulunmamaktadır.");
+            return;
+        }
+    }
+
+    if (maasSirasi === "artan") {
+        liste.sort((a, b) => a.maas - b.maas);
+    } else if (maasSirasi === "azalan") {
+        liste.sort((a, b) => b.maas - a.maas);
+    }
+
+    console.log("Çalışan Listesi:");
+    liste.forEach(calisan => {
+        console.log(`İsim: ${calisan.isim}, Yaş: ${calisan.yas}, Departman: ${calisan.departman}, Maaş: ${calisan.maas}`);
+    });
+}
+
+function maasAltindaListele(maas) {
+    const altindaOlanlar = calisanlar.filter(calisan => calisan.maas < maas);
+    if (altindaOlanlar.length === 0) {
+        console.log(`Maaşı ${maas} TL'nin altında çalışan bulunmamaktadır.`);
+        return;
+    }
+
+    console.log(`Maaşı ${maas} TL'nin altında olan çalışanlar:`);
+    altindaOlanlar.forEach(calisan => {
+        console.log(`İsim: ${calisan.isim}, Maaş: ${calisan.maas}`);
+    });
+}
+
+function enYuksekMaasliCalisan() {
+    if (calisanlar.length === 0) {
+        console.log("Çalışan bulunmamaktadır.");
+        return;
+    }
+    
+    let enYuksek = calisanlar[0];
+    for (let calisan of calisanlar) {
+        if (calisan.maas > enYuksek.maas) {
+            enYuksek = calisan;
+        }
+    }
+    console.log(`En yüksek maaşlı çalışan: İsim: ${enYuksek.isim}, Maaş: ${enYuksek.maas}`);
+}
+
+function toplamMaasHesapla(departman = null) {
+    let toplam = 0;
+
+    for (let calisan of calisanlar) {
+        if (!departman || calisan.departman === departman) {
+            toplam += calisan.maas;
+        }
+    }
+
+    console.log(`Toplam maaş: ${toplam} TL`);
+}
+
+// Örnek Kullanımlar
+calisanEkle("Ahmet", 30, "IT", 6000);
+calisanEkle("Ayşe", 25, "HR", 4500);
+calisanEkle("Mehmet", 40, "IT", 7000);
+calisanEkle("Fatma", 22, "Finance", 4000);
+calisanEkle("Ahmet", 28, "IT", 5000); // Aynı isimde çalışan
+calisanGuncelle("Ayşe", "Ayşe", 26, "HR", 4700);
+calisanSil("Mehmet");
+calisanListele("IT");
+maasAltindaListele(5000);
+enYuksekMaasliCalisan();
+toplamMaasHesapla("IT");
